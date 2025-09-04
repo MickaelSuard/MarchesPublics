@@ -4,6 +4,7 @@ import { Search, Filter, Plus, Download, Upload, FileText } from 'lucide-react';
 import { MarketCard } from './MarketCard';
 import { MarketForm } from './MarketForm';
 import { exportData, importData } from '../utils/dataManager';
+import { useAlert } from '../context/AlertContext';
 
 interface DashboardProps {
   marches: MarchePublic[];
@@ -28,6 +29,7 @@ export function Dashboard({
   const [showForm, setShowForm] = useState(false);
   const [editingMarche, setEditingMarche] = useState<MarchePublic | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const { showAlert } = useAlert();
 
   const handleImport = () => {
     const input = document.createElement('input');
@@ -39,9 +41,9 @@ export function Dashboard({
         try {
           const importedData = await importData(file);
           onImportData(importedData);
-          alert(`${importedData.length} marchés importés avec succès!`);
+          showAlert(`${importedData.length} marchés importés avec succès!`, 'success');
         } catch (error) {
-          alert('Erreur lors de l\'import: ' + (error as Error).message);
+          showAlert('Erreur lors de l\'import: ' + (error as Error).message, 'error');
         }
       }
     };
@@ -79,7 +81,10 @@ export function Dashboard({
             </div>
             <div className="flex items-center space-x-3">
               <button
-                onClick={() => exportData(marches)}
+                onClick={() => {
+                  exportData(marches);
+                  showAlert('Export JSON effectué', 'success');
+                }}
                 className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
               >
                 <Download className="w-4 h-4 mr-2" />

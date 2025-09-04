@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { Document } from '../types';
 import { Plus, FileText, Download, Trash2, Upload } from 'lucide-react';
 import { generateId } from '../utils/dataManager';
+import { useAlert } from '../context/AlertContext';
 
 interface DocumentManagerProps {
   documents: Document[];
@@ -10,6 +11,7 @@ interface DocumentManagerProps {
 
 export function DocumentManager({ documents, onDocumentsChange }: DocumentManagerProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { showAlert } = useAlert();
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -27,6 +29,7 @@ export function DocumentManager({ documents, onDocumentsChange }: DocumentManage
         };
 
         onDocumentsChange([...documents, newDoc]);
+        showAlert('Document ajouté', 'success');
       };
       
       if (file.type.startsWith('text/') || file.name.endsWith('.json')) {
@@ -71,6 +74,7 @@ export function DocumentManager({ documents, onDocumentsChange }: DocumentManage
 
   const handleDelete = (id: string) => {
     onDocumentsChange(documents.filter(doc => doc.id !== id));
+    showAlert('Document supprimé', 'success');
   };
 
   const formatFileSize = (bytes: number) => {

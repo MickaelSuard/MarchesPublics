@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Note } from '../types';
 import { Plus, Edit3, Trash2, Save, X, FileText } from 'lucide-react';
 import { generateId } from '../utils/dataManager';
+import { useAlert } from '../context/AlertContext';
 
 interface NotesSectionProps {
   notes: Note[];
@@ -13,6 +14,7 @@ export function NotesSection({ notes, onNotesChange }: NotesSectionProps) {
   const [editingNote, setEditingNote] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
   const [authorName, setAuthorName] = useState('Utilisateur');
+  const { showAlert } = useAlert();
 
   const handleAddNote = () => {
     if (!newNote.trim()) return;
@@ -26,6 +28,7 @@ export function NotesSection({ notes, onNotesChange }: NotesSectionProps) {
 
     onNotesChange([...notes, note]);
     setNewNote('');
+    showAlert('Note ajoutée', 'success');
   };
 
   const handleEditNote = (note: Note) => {
@@ -45,11 +48,13 @@ export function NotesSection({ notes, onNotesChange }: NotesSectionProps) {
     onNotesChange(updatedNotes);
     setEditingNote(null);
     setEditContent('');
+    showAlert('Note modifiée', 'success');
   };
 
   const handleDeleteNote = (id: string) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer cette note ?')) {
       onNotesChange(notes.filter(note => note.id !== id));
+      showAlert('Note supprimée', 'success');
     }
   };
 

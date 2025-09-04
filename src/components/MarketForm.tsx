@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { MarchePublic } from '../types';
-import { X, Save, Calendar, Building2, Euro, Clock, FileText } from 'lucide-react';
+import { X, Save, Calendar,Euro, Clock, FileText } from 'lucide-react';
 import { DocumentManager } from './DocumentManager';
 import { NotesSection } from './NotesSection';
-import { generateId } from '../utils/dataManager';
 
 interface MarketFormProps {
   marche?: MarchePublic | null;
@@ -12,11 +11,11 @@ interface MarketFormProps {
 }
 
 export function MarketForm({ marche, onSubmit, onCancel }: MarketFormProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Omit<MarchePublic, 'id' | 'dateCreation' | 'dateModification'>>({
     titre: '',
     universite: '',
     nombreAnnees: 1,
-    statut: 'en_attente' as const,
+    statut: 'en_attente',
     montant: 0,
     dateDebut: '',
     dateFin: '',
