@@ -1,4 +1,3 @@
-import React from 'react';
 import { MarchePublic } from '../types';
 import { Calendar, Building2, Edit, Trash2, FileText, StickyNote, Clock, Euro } from 'lucide-react';
 
@@ -30,7 +29,7 @@ export function MarketCard({ marche, onEdit, onDelete }: MarketCardProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md  transition hover:scale-105 duration-200">
       <div className="p-6">
         {/* Header */}
         <div className="flex justify-between items-start mb-4">

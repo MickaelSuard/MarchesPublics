@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { MarchePublic, FilterOptions } from '../types';
-import { Search, Filter, Plus, Download, Upload, FileText } from 'lucide-react';
+import { Search, Filter, Plus, Download, Upload, FileText, Clock, CheckCircle2 } from 'lucide-react';
 import { MarketCard } from './MarketCard';
 import { MarketForm } from './MarketForm';
 import { exportData, importData } from '../utils/dataManager';
@@ -129,8 +129,8 @@ export function Dashboard({
 
       {/* Stats Cards */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 ">
+          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 transition hover:scale-105 duration-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total</p>
@@ -141,29 +141,29 @@ export function Dashboard({
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 transition hover:scale-105 duration-200 ">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">En cours</p>
                 <p className="text-2xl font-bold text-green-600">{stats.enCours}</p>
               </div>
               <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <Clock className="w-5 h-5 text-green-500" />
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 transition hover:scale-105 duration-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Terminés</p>
                 <p className="text-2xl font-bold text-gray-600">{stats.termines}</p>
               </div>
               <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                <CheckCircle2 className="w-5 h-5 text-gray-500" />
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 transition hover:scale-105 duration-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Montant total</p>
@@ -199,7 +199,7 @@ export function Dashboard({
           </div>
 
           {showFilters && (
-            <div className="mt-4 pt-4 border-t border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="mt-4 pt-4 border-t border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-4 ">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Statut</label>
                 <select
@@ -232,7 +232,7 @@ export function Dashboard({
         </div>
 
         {/* Markets Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 ">
           {filteredMarches.map(marche => (
             <MarketCard
               key={marche.id}
@@ -247,7 +247,7 @@ export function Dashboard({
         </div>
 
         {filteredMarches.length === 0 && (
-          <div className="text-center py-12">
+          <div className="text-center py-12 ">
             <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun marché trouvé</h3>
             <p className="text-gray-500">
