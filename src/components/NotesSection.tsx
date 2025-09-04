@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Note } from '../types';
 import { Plus, Edit3, Trash2, Save, X, FileText } from 'lucide-react';
 import { generateId } from '../utils/dataManager';

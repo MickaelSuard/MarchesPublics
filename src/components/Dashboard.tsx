@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { MarchePublic, FilterOptions } from '../types';
 import { Search, Filter, Plus, Download, Upload, FileText } from 'lucide-react';
 import { MarketCard } from './MarketCard';
