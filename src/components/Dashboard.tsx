@@ -14,10 +14,10 @@ interface DashboardProps {
   onImportData: (marches: MarchePublic[]) => void;
 }
 
-export function Dashboard({ 
-  marches, 
-  onCreateMarche, 
-  onUpdateMarche, 
+export function Dashboard({
+  marches,
+  onCreateMarche,
+  onUpdateMarche,
   onDeleteMarche,
   onImportData
 }: DashboardProps) {
@@ -29,6 +29,8 @@ export function Dashboard({
   const [showForm, setShowForm] = useState(false);
   const [editingMarche, setEditingMarche] = useState<MarchePublic | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [importModalOpen, setImportModalOpen] = useState(false);
+  const [pendingImport, setPendingImport] = useState<MarchePublic[] | null>(null);
   const { showAlert } = useAlert();
 
   const handleImport = () => {
@@ -40,8 +42,8 @@ export function Dashboard({
       if (file) {
         try {
           const importedData = await importData(file);
-          onImportData(importedData);
-          showAlert(`${importedData.length} marchés importés avec succès!`, 'success');
+          setPendingImport(importedData);
+          setImportModalOpen(true);
         } catch (error) {
           showAlert('Erreur lors de l\'import: ' + (error as Error).message, 'error');
         }
@@ -50,13 +52,29 @@ export function Dashboard({
     input.click();
   };
 
+  const confirmImport = () => {
+    if (pendingImport) {
+      // Remplacer le localStorage
+      window.localStorage.setItem('marches-publics', JSON.stringify(pendingImport));
+      onImportData(pendingImport);
+      showAlert(`${pendingImport.length} marché(s) importé(s)`, 'success');
+    }
+    setImportModalOpen(false);
+    setPendingImport(null);
+  };
+
+  const cancelImport = () => {
+    setImportModalOpen(false);
+    setPendingImport(null);
+  };
+
   const filteredMarches = marches.filter(marche => {
     const matchStatut = !filters.statut || marche.statut === filters.statut;
     const matchUniversite = !filters.universite || marche.universite.toLowerCase().includes(filters.universite.toLowerCase());
-    const matchRecherche = !filters.recherche || 
+    const matchRecherche = !filters.recherche ||
       marche.titre.toLowerCase().includes(filters.recherche.toLowerCase()) ||
       marche.description.toLowerCase().includes(filters.recherche.toLowerCase());
-    
+
     return matchStatut && matchUniversite && matchRecherche;
   });
 
@@ -233,7 +251,7 @@ export function Dashboard({
             <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun marché trouvé</h3>
             <p className="text-gray-500">
-              {marches.length === 0 
+              {marches.length === 0
                 ? "Commencez par ajouter votre premier marché public"
                 : "Essayez de modifier vos filtres de recherche"
               }
@@ -262,6 +280,33 @@ export function Dashboard({
                 setEditingMarche(null);
               }}
             />
+          </div>
+        </div>
+      )}
+
+      {/* Import Confirmation Modal */}
+      {importModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">Importer des marchés publics</h3>
+            <p className="text-gray-700 mb-4">
+              Attention : Les éléments actuels non sauvegardés seront <span className="font-bold text-red-600">supprimés définitivement</span> et remplacés par ceux du fichier importé.<br />
+              Voulez-vous continuer ?
+            </p>
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={cancelImport}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={confirmImport}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Oui, remplacer
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -30,11 +30,8 @@ function App() {
   };
 
   const handleImportData = (importedMarches: MarchePublic[]) => {
-    // Fusionner avec les données existantes
-    const existingIds = new Set(marches.map(m => m.id));
-    const newMarches = importedMarches.filter(m => !existingIds.has(m.id));
-    setMarches([...marches, ...newMarches]);
-    showAlert(`${newMarches.length} marché(s) importé(s)`, 'success');
+    setMarches(importedMarches);
+    // showAlert déplacé dans Dashboard
   };
 
   return (

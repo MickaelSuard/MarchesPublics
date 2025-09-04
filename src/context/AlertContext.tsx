@@ -26,7 +26,7 @@ export function AlertProvider({ children }: { children: ReactNode }) {
 
   const showAlert = (message: string, type: AlertType = 'info') => {
     setAlert({ message, type, visible: true });
-    setTimeout(() => setAlert(a => ({ ...a, visible: false })), 3000);
+    setTimeout(() => setAlert(a => ({ ...a, visible: false })), 5000);
   };
 
   const iconMap = {
