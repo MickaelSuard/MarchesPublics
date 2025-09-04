@@ -1,10 +1,11 @@
 import { MarchePublic } from '../types';
-import { Calendar, Building2, Edit, Trash2, FileText, StickyNote, Clock, Euro } from 'lucide-react';
+import { Calendar, Building2, Edit, Trash2, FileText, StickyNote, Clock, Euro, Eye } from 'lucide-react';
 
 interface MarketCardProps {
   marche: MarchePublic;
   onEdit: (marche: MarchePublic) => void;
   onDelete: (id: string) => void;
+  onView?: () => void; // nouvelle prop
 }
 
 const statusColors = {
@@ -21,7 +22,7 @@ const statusLabels = {
   en_attente: 'En attente'
 };
 
-export function MarketCard({ marche, onEdit, onDelete }: MarketCardProps) {
+export function MarketCard({ marche, onEdit, onDelete, onView }: MarketCardProps) {
   const handleDelete = () => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce marché ?')) {
       onDelete(marche.id);
@@ -89,6 +90,16 @@ export function MarketCard({ marche, onEdit, onDelete }: MarketCardProps) {
 
         {/* Actions */}
         <div className="flex justify-end space-x-2 pt-4 border-t border-gray-100">
+          {onView && (
+            <button
+              onClick={onView}
+              className="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors"
+            >
+              <Eye className="w-4 h-4 mr-1" />
+              Voir plus
+            </button>
+          )}
+
           <button
             onClick={() => onEdit(marche)}
             className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
@@ -103,6 +114,7 @@ export function MarketCard({ marche, onEdit, onDelete }: MarketCardProps) {
             <Trash2 className="w-4 h-4 mr-1" />
             Supprimer
           </button>
+
         </div>
       </div>
     </div>

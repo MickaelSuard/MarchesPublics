@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { MarchePublic, FilterOptions } from '../types';
-import { Search, Filter, Plus, Download, Upload, FileText, Clock, CheckCircle2 } from 'lucide-react';
+import { MarchePublic, FilterOptions, Document } from '../types';
+import { Search, Filter, Plus, Download, Upload, FileText, Clock, CheckCircle2, X, FileText as DocIcon, StickyNote, Download as DownloadIcon } from 'lucide-react';
 import { MarketCard } from './MarketCard';
 import { MarketForm } from './MarketForm';
 import { exportData, importData } from '../utils/dataManager';
@@ -31,6 +31,7 @@ export function Dashboard({
   const [showFilters, setShowFilters] = useState(false);
   const [importModalOpen, setImportModalOpen] = useState(false);
   const [pendingImport, setPendingImport] = useState<MarchePublic[] | null>(null);
+  const [detailMarche, setDetailMarche] = useState<MarchePublic | null>(null);
   const { showAlert } = useAlert();
 
   const handleImport = () => {
@@ -86,6 +87,31 @@ export function Dashboard({
   };
 
   const universites = Array.from(new Set(marches.map(m => m.universite)));
+
+  // Téléchargement document depuis la modal
+  const handleDownloadDoc = (doc: Document) => {
+    if (!doc.contenu) return;
+    let blob;
+    if (doc.contenu.startsWith('data:')) {
+      const byteCharacters = atob(doc.contenu.split(',')[1]);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      blob = new Blob([byteArray], { type: doc.type });
+    } else {
+      blob = new Blob([doc.contenu], { type: doc.type });
+    }
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = doc.nom;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -234,15 +260,17 @@ export function Dashboard({
         {/* Markets Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 ">
           {filteredMarches.map(marche => (
-            <MarketCard
-              key={marche.id}
-              marche={marche}
-              onEdit={(marche) => {
-                setEditingMarche(marche);
-                setShowForm(true);
-              }}
-              onDelete={onDeleteMarche}
-            />
+            <div key={marche.id}>
+              <MarketCard
+                marche={marche}
+                onEdit={(marche) => {
+                  setEditingMarche(marche);
+                  setShowForm(true);
+                }}
+                onDelete={onDeleteMarche}
+                onView={() => setDetailMarche(marche)}
+              />
+            </div>
           ))}
         </div>
 
@@ -306,6 +334,83 @@ export function Dashboard({
               >
                 Oui, remplacer
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal détails marché */}
+      {detailMarche && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg max-w-2xl w-full p-6 relative overflow-y-auto max-h-[90vh]">
+            <button
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              onClick={() => setDetailMarche(null)}
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">{detailMarche.titre}</h2>
+            <div className="mb-2 text-sm text-gray-600">
+              <span className="font-semibold">Université :</span> {detailMarche.universite}
+            </div>
+            <div className="mb-2 text-sm text-gray-600">
+              <span className="font-semibold">Statut :</span> {detailMarche.statut}
+            </div>
+            <div className="mb-2 text-sm text-gray-600">
+              <span className="font-semibold">Montant :</span> {detailMarche.montant.toLocaleString('fr-FR')} €
+            </div>
+            <div className="mb-2 text-sm text-gray-600">
+              <span className="font-semibold">Période :</span> {new Date(detailMarche.dateDebut).toLocaleDateString('fr-FR')} - {new Date(detailMarche.dateFin).toLocaleDateString('fr-FR')}
+            </div>
+            <div className="mb-4 text-sm text-gray-700">
+              <span className="font-semibold">Description :</span>
+              <div className="mt-1 whitespace-pre-line">{detailMarche.description}</div>
+            </div>
+            {/* Documents */}
+            <div className="mb-6">
+              <div className="flex items-center mb-2">
+                <DocIcon className="w-5 h-5 text-blue-500 mr-2" />
+                <span className="font-semibold text-gray-800">Documents ({detailMarche.documents.length})</span>
+              </div>
+              {detailMarche.documents.length > 0 ? (
+                <ul className="space-y-2">
+                  {detailMarche.documents.map(doc => (
+                    <li key={doc.id} className="flex items-center justify-between bg-gray-50 rounded px-3 py-2">
+                      <span className="truncate">{doc.nom}</span>
+                      <button
+                        className="ml-2 px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-xs flex items-center"
+                        onClick={() => handleDownloadDoc(doc)}
+                      >
+                        <DownloadIcon className="w-4 h-4 mr-1" />
+                        Télécharger
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <span className="text-xs text-gray-400">Aucun document</span>
+              )}
+            </div>
+            {/* Notes */}
+            <div>
+              <div className="flex items-center mb-2">
+                <StickyNote className="w-5 h-5 text-yellow-500 mr-2" />
+                <span className="font-semibold text-gray-800">Notes ({detailMarche.notes.length})</span>
+              </div>
+              {detailMarche.notes.length > 0 ? (
+                <ul className="space-y-2">
+                  {detailMarche.notes.map(note => (
+                    <li key={note.id} className="bg-gray-50 rounded px-3 py-2">
+                      <div className="text-xs text-gray-700 whitespace-pre-line">{note.contenu}</div>
+                      <div className="text-[11px] text-gray-500 mt-1">
+                        Par {note.auteur} le {new Date(note.dateCreation).toLocaleDateString('fr-FR')} à {new Date(note.dateCreation).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <span className="text-xs text-gray-400">Aucune note</span>
+              )}
             </div>
           </div>
         </div>
